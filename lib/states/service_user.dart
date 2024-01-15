@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/loan.dart';
 import 'package:flutter_application/utility/my_constant.dart';
 import 'package:flutter_application/utility/my_style.dart';
+import 'package:flutter_application/widgets/home.dart';
+import 'package:flutter_application/widgets/loan.dart';
 import 'package:flutter_application/widgets/show_image.dart';
 import 'package:flutter_application/widgets/show_progress.dart';
 import 'package:flutter_application/widgets/show_title.dart';
@@ -19,6 +23,8 @@ class ServiceUser extends StatefulWidget {
 }
 
 class _ServiceUserState extends State<ServiceUser> {
+  int _mainIndex = 0;
+  final _pageOptions = [Home(), const Loan()];
   List<Widget> widgets = [];
   List<String> pathImages = [
     'images/banner1.jpg',
@@ -63,9 +69,87 @@ class _ServiceUserState extends State<ServiceUser> {
     }
   }
 
+  final iconList = <IconData>[
+    Icons.person,
+    Icons.settings,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // bottomNavigationBar: AnimatedBottomNavigationBar(
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.home_rounded), label: 'Home'),
+      //     BottomNavigationBarItem(icon: Icon(Icons.money), label: 'Loan')
+      //   ],
+      //   elevation: 15.0,
+      //   currentIndex: _mainIndex,
+      //   onTap: (int index) {
+      //     setState(() {
+      //       _mainIndex = index;
+      //     });
+      //   },
+      // ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () {},
+        shape: RoundedRectangleBorder(
+            side: const BorderSide(width: 2, color: MyConstant.statndard),
+            borderRadius: BorderRadius.circular(100)),
+        child: const Icon(
+          Icons.home,
+          color: MyConstant.statndard,
+          size: 30,
+        ),
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: AnimatedBottomNavigationBar(
+        icons: iconList,
+        inactiveColor: MyConstant.primary,
+        activeColor: MyConstant.primary,
+        activeIndex: _mainIndex,
+        backgroundColor: MyConstant.statndard,
+        gapLocation: GapLocation.center,
+
+        notchSmoothness: NotchSmoothness.defaultEdge,
+        onTap: (index) => setState(() => _mainIndex = index),
+        //other params
+      ),
+      // bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+      //   itemCount: iconList.length,
+      //   tabBuilder: (int index, bool isActive) {
+      //     final color = isActive ? MyConstant.primary : MyConstant.statndard;
+      //     return Column(
+      //       mainAxisSize: MainAxisSize.min,
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       children: [
+      //         Icon(
+      //           iconList[index],
+      //           size: 24,
+      //           color: color,
+      //         ),
+      //         const SizedBox(height: 4),
+      //         const Padding(
+      //           padding: EdgeInsets.symmetric(horizontal: 8),
+      //         )
+      //       ],
+      //     );
+      //   },
+      //   backgroundColor: MyConstant.light,
+      //   activeIndex: _mainIndex,
+      //   splashColor: MyConstant.primary,
+      //   // notchAndCornersAnimation:
+      //   splashSpeedInMilliseconds: 300,
+      //   notchSmoothness: NotchSmoothness.defaultEdge,
+      //   gapLocation: GapLocation.center,
+      //   leftCornerRadius: 32,
+      //   rightCornerRadius: 32,
+      //   onTap: (index) => setState(() => _mainIndex = index),
+      //   // hideAnimationController: _hideBottomBarAnimationController,
+      // ),
+
       appBar: AppBar(
         backgroundColor: MyConstant.statndard,
         title: Center(
@@ -80,15 +164,7 @@ class _ServiceUserState extends State<ServiceUser> {
         ),
         actions: [buildSignOut()],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            buildCarouselSlider(),
-            buildTiltle(),
-            LoanModels.length == 0 ? const ShowProgress() : buildListView()
-          ],
-        ),
-      ),
+      body: _pageOptions[_mainIndex],
     );
   }
 
@@ -106,7 +182,7 @@ class _ServiceUserState extends State<ServiceUser> {
       context: context,
       builder: (context) => SimpleDialog(
         title: ListTile(
-          leading: ShowImage(),
+          leading: const ShowImage(),
           title: ShowTitle(
             title: " detail " + model.name,
             textStyle: MyStyle().h2Style(),

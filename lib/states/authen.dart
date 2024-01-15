@@ -76,10 +76,13 @@ class _AuthenState extends State<Authen> {
       child: ElevatedButton(
         style: MyStyle().myButtonStyleV2(),
         onPressed: () {
-          if (formKey.currentState!.validate()) {
-            checkAuthen(
-                user: userController.text, password: passwordController.text);
-          }
+          // if (formKey.currentState!.validate()) {
+          //   checkAuthen(
+          //       user: userController.text, password: passwordController.text);
+          // }
+          
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/serviceUSer', (route) => false);
         },
         child: const Text(
           'Login',
